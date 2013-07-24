@@ -76,12 +76,12 @@ static public void main(String args[]) {
   PApplet applet = new fromHavas_130717a();
   frame.add(applet);
   applet.init();
-  frame.setBounds(0, 0, 1920, 1080); 
+  frame.setBounds(0, 0, 1920*2, 1080); 
   frame.setVisible(true);
 }
 
 void setup() {
-  size(1920, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
+  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
   smooth();
   frameRate(30);
   img = loadImage("havasMark2.gif");
@@ -101,7 +101,9 @@ void setup() {
   MapUtils.createDefaultEventDispatcher(this, map);
   map.setTweening(true);
 //  map.zoomAndPanTo(centerLocation, 2);
-  map.zoomAndPanTo(firstLocation, 13);
+//  map.zoomAndPanTo(secondLocation, 3);
+  map.zoomAndPanTo(firstLocation, 8);
+//  map.zoomAndPanTo(firstLocation, 13);
   zoomLevel = 13;
   
   // twitter
@@ -152,17 +154,19 @@ void draw() {
   earthquakeMarker.display();
 
   
-//  CNT = 2;
+//  CNT = 1;
   if (frameCount % 600 == 0) {
     if (CNT == 1) {
       map.zoomAndPanTo(secondLocation, 3);
     }
     if (CNT == 2) {
-      map.zoomAndPanTo(centerLocation, 2);
+//      map.zoomAndPanTo(centerLocation, 2);
+      map.zoomAndPanTo(secondLocation, 3);
     }
     if (CNT == 3) {
       CNT = 0;
-      map.zoomAndPanTo(firstLocation, 13);
+//      map.zoomAndPanTo(firstLocation, 13);
+      map.zoomAndPanTo(firstLocation, 8);
     }
     CNT++;
   }
