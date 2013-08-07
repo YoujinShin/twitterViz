@@ -56,27 +56,27 @@ Location firstLocation = new Location(41.754586, -82.127606);
 Location secondLocation = new Location(37.319828, -26.880493);
 Location panLocation = centerLocation;
 
-//static public void main(String args[]) {
-//  Frame frame = new Frame("testing");
-//  frame.setUndecorated(true);
-//  // The name "sketch_name" must match the name of your program
-//  PApplet applet = new followLOVE_130801a();
-//  frame.add(applet);
-//  applet.init();
-//  frame.setBounds(0, 0, 1920*2, 1080); 
-//  frame.setVisible(true);
-//}
+static public void main(String args[]) {
+  Frame frame = new Frame("testing");
+  frame.setUndecorated(true);
+  // The name "sketch_name" must match the name of your program
+  PApplet applet = new followLOVE_130801a();
+  frame.add(applet);
+  applet.init();
+  frame.setBounds(0, 0, 1920*2, 1080); 
+  frame.setVisible(true);
+}
 
 void setup() {
 //  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
-  size(1400, 700, GLConstants.GLGRAPHICS);
+  size(1920*2, 1080, GLConstants.GLGRAPHICS);
   smooth();
-  font = createFont("/Users/youjinshin/Documents/TwitterViz/fromHavas_130730a/data/DS-DIGIB.TTF", 32);
-//  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
+//  font = createFont("/Users/youjinshin/Documents/TwitterViz/fromHavas_130730a/data/DS-DIGIB.TTF", 32);
+  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
 
   // unfolding map
-  String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
-//  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
+//  String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
+  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
   map = new UnfoldingMap(this, new MBTilesMapProvider(connStr));
   //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new MapBox.ControlRoomProvider());
 //  map = new UnfoldingMap(this, new Microsoft.RoadProvider());
@@ -88,7 +88,7 @@ void setup() {
 //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
   MapUtils.createDefaultEventDispatcher(this, map);
   map.setTweening(true);
-  map.zoomAndPanTo(centerLocation,2);
+  map.zoomAndPanTo(centerLocation,3);
   zoomLevel = 13;
   
   // twitter
@@ -146,7 +146,7 @@ void draw() {
 //  CNT = 1;
   if (frameCount % 500 == 0) {
     if (CNT == 1) {
-      map.zoomAndPanTo(centerLocation, 2);
+      map.zoomAndPanTo(centerLocation, 3);
       panLocation = centerLocation;
     }
     if (CNT == 2) {

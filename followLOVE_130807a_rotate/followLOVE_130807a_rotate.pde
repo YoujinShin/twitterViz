@@ -36,9 +36,17 @@ UnfoldingMap map;
 SimplePointMarker myMarker;
 SimplePointMarker havasMarker;
 
-float lon = 0;
 float lat = 0;
+float lon = 0;
 int num = 0;
+
+// panning
+float panLat = 0;
+float panLon = 0;
+float r = 12;
+float theta = 0;
+float currentLat = 0;
+float currentLon = 0;
 
 boolean TwitterOn = false;
 boolean StartOn = false;
@@ -54,7 +62,6 @@ Location centerLocation = new Location(30, 0); // lat ldong
 Location havasLocation = new Location(40.722912, -74.007606);
 Location firstLocation = new Location(41.754586, -82.127606);
 Location secondLocation = new Location(37.319828, -26.880493);
-Location panLocation = centerLocation;
 
 //static public void main(String args[]) {
 //  Frame frame = new Frame("testing");
@@ -68,29 +75,29 @@ Location panLocation = centerLocation;
 //}
 
 void setup() {
-//  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
+  //  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
   size(1400, 700, GLConstants.GLGRAPHICS);
   smooth();
   font = createFont("/Users/youjinshin/Documents/TwitterViz/fromHavas_130730a/data/DS-DIGIB.TTF", 32);
-//  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
+  //  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
 
   // unfolding map
   String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
-//  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
+  //  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
   map = new UnfoldingMap(this, new MBTilesMapProvider(connStr));
   //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new MapBox.ControlRoomProvider());
-//  map = new UnfoldingMap(this, new Microsoft.RoadProvider());
- //map = new UnfoldingMap(this,  new Microsoft.AerialProvider());
+  //  map = new UnfoldingMap(this, new Microsoft.RoadProvider());
+  //map = new UnfoldingMap(this,  new Microsoft.AerialProvider());
   //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new OpenStreetMap.OpenStreetMapProvider());
   //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new StamenMapProvider.TonerBackground());
   //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
   //  map = new UnfoldingMap(this, new Microsoft.AerialProvider());
-//  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
+  //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
   MapUtils.createDefaultEventDispatcher(this, map);
   map.setTweening(true);
-  map.zoomAndPanTo(centerLocation,2);
+  map.zoomAndPanTo(centerLocation, 2);
   zoomLevel = 13;
-  
+
   // twitter
   connectTwitter();
   twitter.addListener(listener);
@@ -103,7 +110,7 @@ void setup() {
 }
 
 void draw() {
-//  noCursor();
+  //  noCursor();
   imageMode(CORNER);
   directionalLight(166, 166, 196, -60, -60, -60);
   background(0);
@@ -121,15 +128,14 @@ void draw() {
   if (StartOn) {
     for (int i = 0; i < myTweets.size(); i++) {
       Tweet t = (Tweet) myTweets.get(i); 
-//      t.display(i);
-      
-      if(i > 1) {     
+      //      t.display(i);
+      if (i > 1) {     
         Tweet tp = (Tweet) myTweets.get(i-1);
-        if(tp.isDraw == true) {
+        if (tp.isDraw == true) {
           t.display(i);
         }
-        
-      } else {
+      } 
+      else {
         t.display(i);
       }
       pLocation = t.myLocation;
@@ -138,29 +144,42 @@ void draw() {
   if (myTweets.size() > 10) {
     myTweets.remove(0);
   }
-  println(myTweets.size());
-  
+
   TwitterOn = false;
   myTime.display();
-  
-//  CNT = 1;
-  if (frameCount % 500 == 0) {
+
+  if (frameCount % 600 == 0) {
     if (CNT == 1) {
       map.zoomAndPanTo(centerLocation, 2);
-      panLocation = centerLocation;
     }
     if (CNT == 2) {
-      map.zoomAndPanTo(havasLocation, 4);
-      
-    }
-    if (CNT == 3) {
-      CNT = 0;
-      map.zoomAndPanTo(havasLocation, 5);
+      currentLat = lat;
+      currentLon = lon;
     }
     CNT++;
-    if(CNT > 3) {
+    
+    currentLat = lat;
+    currentLon = lon;
+    
+    if (CNT > 2) {
       CNT = 1;
     }
+  }
+
+  panLat = r * cos(theta) + currentLat;
+  panLon = r * sin(theta) + currentLon;
+  theta = theta + 0.008;
+  Location panLocation = new Location(panLat, panLon);
+
+  if (theta > 2*PI) {
+    theta = 0;
+  }
+
+  if (CNT == 2) {
+    map.zoomAndPanTo(panLocation, 4);
+  }
+  if (CNT == 1) {
+    map.zoomAndPanTo(centerLocation, 2);
   }
 }
 
@@ -201,3 +220,4 @@ StatusListener listener = new StatusListener() {
   public void onStallWarning(StallWarning warning) {
   }
 };
+

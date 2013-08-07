@@ -1,10 +1,10 @@
 class ArcLine {
 
-  int num = 24;
+  int num = 20;
   int cnt = 0;
   int cntB = 0;
   float increment = PI/num;
-  float strokeWidth = 0;
+  float strokeWidth = 1;
 
   float x1 = 0;
   float y1 = 0;
@@ -19,8 +19,7 @@ class ArcLine {
     y1 = y1_;
     x2 = x2_;
     y2 = y2_;
-//    strokeWidth = map(strokeWidth_, 0, 15, 30, 255);
-    strokeWidth = strokeWidth_*0.5;
+//    strokeWidth = strokeWidth_/2.8;
     displayArc3D();
   }
 
@@ -31,9 +30,8 @@ class ArcLine {
     float dia = dist(x1, y1, x2, y2);
     
     noFill();
-    strokeWeight(strokeWidth);
-    stroke(190,60,100);
-//    stroke(190,60,100,strokeWidth); // 57
+    strokeWeight(3);
+    stroke(190,60,100,90); // 57
     
     pushMatrix();
     translate(x1, y1);

@@ -5,6 +5,7 @@ class ArcLine {
   int cntB = 0;
   float increment = PI/num;
   float strokeWidth = 0;
+  float d = 0;
 
   float x1 = 0;
   float y1 = 0;
@@ -25,7 +26,6 @@ class ArcLine {
   }
 
   void displayArc3D() {
-  
     float d1 = dist(x1, y1, 0, 0);
     float d2 = dist(x2, y2, 0, 0);
     float dia = dist(x1, y1, x2, y2);
@@ -44,8 +44,11 @@ class ArcLine {
 
     pushMatrix();
     rotateX(-PI/2);
-    //arc(dia/2, 0, dia, dia, PI+increment*cntB, PI+increment*cnt); // disappear
-    arc(dia/2, 0, dia, dia, PI, PI+increment*cnt); // reamain
+    arc(dia/2, 0, dia, dia, PI, PI+increment*cnt);
+    
+    float r = dia/2;
+    d = r * increment*cnt;
+    println(d);
 
     popMatrix();
     popMatrix();
@@ -54,10 +57,6 @@ class ArcLine {
     cnt++;
     if (cnt > num) {
       cnt = num; 
-      cntB++;
-      if (cntB > num) {
-        cntB = num;
-      }
     }
   }
 }
