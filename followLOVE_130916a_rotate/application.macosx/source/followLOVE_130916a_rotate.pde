@@ -63,29 +63,29 @@ Location havasLocation = new Location(40.722912, -74.007606);
 Location firstLocation = new Location(41.754586, -82.127606);
 Location secondLocation = new Location(37.319828, -26.880493);
 
-//static public void main(String args[]) {
-//  Frame frame = new Frame("testing");
-//  frame.setUndecorated(true);
-//  // The name "sketch_name" must match the name of your program
-//  PApplet applet = new followLOVE_130801a();
-//  frame.add(applet);
-//  applet.init();
-//  frame.setBounds(0, 0, 1920*2, 1080); 
-//  frame.setVisible(true);
-//}
+static public void main(String args[]) {
+  Frame frame = new Frame("testing");
+  frame.setUndecorated(true);
+  // The name "sketch_name" must match the name of your program
+  PApplet applet = new followLOVE_130916a_rotate();
+  frame.add(applet);
+  applet.init();
+  frame.setBounds(0, 0, 1920*2, 1080); 
+  frame.setVisible(true);
+}
 
 void setup() {
-  //  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
-  size(1400, 700, GLConstants.GLGRAPHICS);
+  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
+//  size(1400, 700, GLConstants.GLGRAPHICS);
   smooth();
   font = createFont("/Users/youjinshin/Documents/TwitterViz/fromHavas_130730a/data/DS-DIGIB.TTF", 32);
-  //  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
+//  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
 
   // unfolding map
   String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
-  //  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
-  map = new UnfoldingMap(this, new MBTilesMapProvider(connStr));
-  //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new MapBox.ControlRoomProvider());
+//  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
+//  map = new UnfoldingMap(this, new MBTilesMapProvider(connStr));
+  map = new UnfoldingMap(this, new MapBox.ControlRoomProvider());
   //  map = new UnfoldingMap(this, new Microsoft.RoadProvider());
   //map = new UnfoldingMap(this,  new Microsoft.AerialProvider());
   //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new OpenStreetMap.OpenStreetMapProvider());
@@ -116,6 +116,11 @@ void draw() {
   background(0);
   map.draw();
 
+  noStroke();
+  fill(0, 170);
+//  fill(244, 100, 5, 190);
+  rect(0, 0, width, height);
+
   if (TwitterOn) {
     myTweets.add(new Tweet(temp_location, pLocation, username));
     StartOn = true;
@@ -130,13 +135,6 @@ void draw() {
         if (tp.isDraw == true) {
           t.display(i);
         }
-
-        if (t.isDraw == false) {
-          Location panLocation = map.getLocation(t.panX, t.panY);
-          if (abs(t.panX) > 0) {
-            map.panTo(panLocation);
-          }
-        }
       } 
       else {
         t.display(i);
@@ -150,6 +148,40 @@ void draw() {
 
   TwitterOn = false;
   myTime.display();
+
+  if (frameCount % 600 == 0) {
+    if (CNT == 1) {
+      map.zoomAndPanTo(centerLocation, 2);
+    }
+    if (CNT == 2) {
+      currentLat = lat;
+      currentLon = lon;
+    }
+    CNT++;
+    
+    currentLat = lat;
+    currentLon = lon;
+    
+    if (CNT > 2) {
+      CNT = 1;
+    }
+  }
+
+  panLat = r * cos(theta) + currentLat;
+  panLon = r * sin(theta) + currentLon;
+  theta = theta + 0.008;
+  Location panLocation = new Location(panLat, panLon);
+
+  if (theta > 2*PI) {
+    theta = 0;
+  }
+
+  if (CNT == 2) {
+    map.zoomAndPanTo(panLocation, 4);
+  }
+  if (CNT == 1) {
+    map.zoomAndPanTo(centerLocation, 3);
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

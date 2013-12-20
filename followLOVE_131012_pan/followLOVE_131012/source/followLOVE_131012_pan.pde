@@ -1,4 +1,3 @@
-
 // unfolding maps
 import processing.opengl.*;
 import processing.core.PGraphics;
@@ -23,14 +22,6 @@ static String OAuthConsumerSecret = "HSh2RyGtUfuNZdbJwTVJNsu7xPn4HBQUPqRQWfsA";
 static String AccessToken = "159058059-NSkrkHQP8YT2E33vSvs3xucJEtLRa63u0CnLRELj";
 static String AccessTokenSecret = "gV8k9tWSiqBqUavY5HwV7Gi0YnjbHZWUegifu6aXLo";
 
-PFont font;
-int zoomLevel = 1;
-int CNT = 1;
-
-String keywords[] = {
-  "love"//"love" //love //@havasww
-};
-
 TwitterStream twitter = new TwitterStreamFactory().getInstance();
 UnfoldingMap map;
 SimplePointMarker myMarker;
@@ -38,118 +29,148 @@ SimplePointMarker havasMarker;
 
 float lat = 0;
 float lon = 0;
-int num = 0;
+PFont font;
+int cntColor = 0;
+int opac = 200;
+color color_set[] = new color[21];
 
 // panning
-float panLat = 0;
-float panLon = 0;
-float r = 12;
-float theta = 0;
-float currentLat = 0;
-float currentLon = 0;
-
 boolean TwitterOn = false;
 boolean StartOn = false;
-boolean imageLoaded = false;
 String username;
+String keywords[] = {"love"};
 
+ArrayList myFire = new ArrayList();
 ArrayList myTweets;
 Time myTime;
 
 Location temp_location;
 Location pLocation;
-Location centerLocation = new Location(30, 0); // lat ldong
+Location centerLocation = new Location(30, 0); // lat lon
 Location havasLocation = new Location(40.722912, -74.007606);
 Location firstLocation = new Location(41.754586, -82.127606);
 Location secondLocation = new Location(37.319828, -26.880493);
 
-//static public void main(String args[]) {
-//  Frame frame = new Frame("testing");
-//  frame.setUndecorated(true);
-//  // The name "sketch_name" must match the name of your program
-//  PApplet applet = new followLOVE_130801a();
-//  frame.add(applet);
-//  applet.init();
-//  frame.setBounds(0, 0, 1920*2, 1080); 
-//  frame.setVisible(true);
-//}
+PVector pan_pos = new PVector();  // location info (x -> lon, y -> lat)
+PVector pan_tpos = new PVector(); // location info (x -> lon, y -> lat)
+int cntStop = 0;
+float rate = 0.03; // for lerp
+
+static public void main(String args[]) {
+  Frame frame = new Frame("testing");
+  frame.setUndecorated(true);
+  // The name "sketch_name" must match the name of your program
+  PApplet applet = new followLOVE_131012_pan();
+  frame.add(applet);
+  applet.init();
+  frame.setBounds(0, 0, 1920*2, 1080); 
+  frame.setVisible(true);
+}
 
 void setup() {
-  //  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
-  size(1400, 700, GLConstants.GLGRAPHICS);
-  smooth();
-  font = createFont("/Users/youjinshin/Documents/TwitterViz/fromHavas_130730a/data/DS-DIGIB.TTF", 32);
-  //  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
+  /* PROJECTION */
+  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
+  font = createFont("/Users/madscience/Desktop/DROP/SansSerif-48.vlw",48);
+  //font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32); 
+  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
+  
+  /* MONITOR */
+//  size(int(1920*0.73), int(540*0.73), GLConstants.GLGRAPHICS);
+//  //size(1280,720, GLConstants.GLGRAPHICS);
+   //font = createFont("SansSerif-48.vlw", 48);
+////  //font = createFont("/Users/youjinshin/Documents/TwitterViz/followLove_131008_pan/data/DS-DIGIB.TTF", 32);
+//  String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
 
   // unfolding map
-  String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
-  //  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
   map = new UnfoldingMap(this, new MBTilesMapProvider(connStr));
-  //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new MapBox.ControlRoomProvider());
-  //  map = new UnfoldingMap(this, new Microsoft.RoadProvider());
-  //map = new UnfoldingMap(this,  new Microsoft.AerialProvider());
-  //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new OpenStreetMap.OpenStreetMapProvider());
-  //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new StamenMapProvider.TonerBackground());
-  //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
-  //  map = new UnfoldingMap(this, new Microsoft.AerialProvider());
-  //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
   MapUtils.createDefaultEventDispatcher(this, map);
   map.setTweening(true);
   map.zoomAndPanTo(centerLocation, 3);
-  zoomLevel = 13;
+  
+  pan_pos.x = 0;
+  pan_pos.y = 30;
+  pan_tpos.x = 0;
+  pan_tpos.y = 30;
 
   // twitter
   connectTwitter();
   twitter.addListener(listener);
   twitter.filter(new FilterQuery().track(keywords));
-
   myTweets = new ArrayList();
   myTime = new Time();
   pLocation = havasLocation;
   colorMode(HSB, 360, 100, 100);
+  getColor();
 }
 
 void draw() {
-  //  noCursor();
   imageMode(CORNER);
   directionalLight(166, 166, 196, -60, -60, -60);
   background(0);
   map.draw();
 
-  if (TwitterOn) {
-    myTweets.add(new Tweet(temp_location, pLocation, username));
+  if (TwitterOn) { // when new twitter comes
+    color tcolor = color_set[cntColor];
+    Fireworks f = new Fireworks();
+    myFire.add(f);
+    
+    Tweet t = new Tweet();
+    t.myLocation = temp_location;
+    t.pLocation = pLocation;
+    t.username = username;
+    t.tcolor = tcolor;
+    t.lat = lat;
+    t.lon = lon;
+    myTweets.add(t);
+    
     StartOn = true;
+    cntStop = 0;
+    rate = 0.03;
+    cntColor++;
+  } else {
+    cntStop++;
+    if(cntStop % 100 == 0) {
+      pan_tpos.x = random(-60, 60);
+      pan_tpos.y = random(-30, 30);
+      rate = 0.01;
+    }
   }
-
+   
+  
   if (StartOn) {
     for (int i = 0; i < myTweets.size(); i++) {
       Tweet t = (Tweet) myTweets.get(i); 
-      //      t.display(i);
+      Fireworks f = (Fireworks) myFire.get(i);
       if (i > 1) {     
         Tweet tp = (Tweet) myTweets.get(i-1);
-        if (tp.isDraw == true) {
-          t.display(i);
-        }
-
+        if (tp.isDraw == true) t.display(i, f);
         if (t.isDraw == false) {
-          Location panLocation = map.getLocation(t.panX, t.panY);
-          if (abs(t.panX) > 0) {
-            map.panTo(panLocation);
-          }
+            pan_tpos.x = t.lon;
+            pan_tpos.y = t.lat;
         }
-      } 
-      else {
-        t.display(i);
+      } else {
+        t.display(i, f);
       }
       pLocation = t.myLocation;
     }
   }  
   if (myTweets.size() > 10) {
     myTweets.remove(0);
+    myFire.remove(0);
+    
   }
-
+  if (cntColor > 10) cntColor = 0;
   TwitterOn = false;
   myTime.display();
+  
+  //pan_pos.lerp(pan_tpos, rate);
+  float dx = pan_tpos.x - pan_pos.x;
+  float dy = pan_tpos.y - pan_pos.y;
+  pan_pos.x += dx * rate;
+  pan_pos.y += dy * rate;
+  
+  Location target = new Location(pan_pos.y, pan_pos.x);
+  map.panTo(target);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +186,6 @@ private static AccessToken loadAccessToken() {
 
 StatusListener listener = new StatusListener() {
   public void onStatus(Status status) {
-    //    println("@" + status.getUser().getScreenName() + " - " + status.getText() + " - " + status.getGeoLocation());
     lon = (float) status.getGeoLocation().getLongitude();
     lat = (float) status.getGeoLocation().getLatitude();
 
@@ -189,4 +209,28 @@ StatusListener listener = new StatusListener() {
   public void onStallWarning(StallWarning warning) {
   }
 };
+
+void getColor() {
+  color_set[0] = color(48, 77, 100, opac);
+  color_set[1] = color(198, 66, 65, opac);
+  color_set[2] = color(91, 70, 76, opac);
+  color_set[3] = color(323, 51, 64, opac);
+  color_set[4] = color(18, 84, 98, opac);
+  color_set[5] = color(7, 78, 88, opac);
+  color_set[6] = color(40, 91, 100, opac);
+  color_set[7] = color(192, 82, 84, opac);
+  color_set[8] = color(124, 57, 56, opac);
+  color_set[9] = color(295, 65, 61, opac);
+  color_set[10] = color(32, 80, 99, opac);
+  color_set[11] = color(48, 77, 100, opac);
+  color_set[12] = color(198, 66, 65, opac);
+  color_set[13] = color(91, 70, 76, opac);
+  color_set[14] = color(323, 51, 64, opac);
+  color_set[15] = color(18, 84, 98, opac);
+  color_set[16] = color(7, 78, 88, opac);
+  color_set[17] = color(40, 91, 100, opac);
+  color_set[18] = color(192, 82, 84, opac);
+  color_set[19] = color(124, 57, 56, opac);
+  color_set[20] = color(295, 65, 61, opac);
+}
 

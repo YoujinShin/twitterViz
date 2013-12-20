@@ -84,15 +84,16 @@ void setup() {
   // unfolding map
   String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
   //  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
-  map = new UnfoldingMap(this, new MBTilesMapProvider(connStr));
+//  map = new UnfoldingMap(this, new MBTilesMapProvider(connStr));
   //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new MapBox.ControlRoomProvider());
   //  map = new UnfoldingMap(this, new Microsoft.RoadProvider());
-  //map = new UnfoldingMap(this,  new Microsoft.AerialProvider());
+//  //map = new UnfoldingMap(this,  new Microsoft.AerialProvider());
   //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new OpenStreetMap.OpenStreetMapProvider());
   //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new StamenMapProvider.TonerBackground());
   //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
-  //  map = new UnfoldingMap(this, new Microsoft.AerialProvider());
-  //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
+// map = new UnfoldingMap(this, new Microsoft.AerialProvider());
+map = new UnfoldingMap(this,new OpenStreetMap.OpenStreetMapProvider());
+//  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
   MapUtils.createDefaultEventDispatcher(this, map);
   map.setTweening(true);
   map.zoomAndPanTo(centerLocation, 3);
@@ -116,9 +117,24 @@ void draw() {
   background(0);
   map.draw();
 
+  noStroke();
+  fill(0, 170);//, 100); //50, 13, 54
+  rect(0, 0, width, height);
+
   if (TwitterOn) {
     myTweets.add(new Tweet(temp_location, pLocation, username));
     StartOn = true;
+      pushMatrix();
+    translate(width*0.84,height*0.86);
+    drawLove(0.7);
+    drawLove(0.7);
+    drawLove(0.7);
+    drawLove(0.7);
+    drawLove(0.7);
+  //  textSize(30);
+  //  textMode(LEFT);
+  //  text("following LOVE", 0, 0);
+    popMatrix();
   }
 
   if (StartOn) {
@@ -148,8 +164,45 @@ void draw() {
     myTweets.remove(0);
   }
 
+  noStroke();
+  fill(0, 100);//, 100); //50, 13, 54
+  rect(0, height*0.81, width, height*0.1);
+  
+  pushMatrix();
+  translate(100, 100);
+//  drawLove(0.8);
+//  textSize(30);
+//  textMode(LEFT);
+//  text("following LOVE", 0, 0);
+  popMatrix();
+  
+  pushMatrix();
+  translate(width*0.84,height*0.86);
+  drawLove(0.5);
+//  textSize(30);
+//  textMode(LEFT);
+//  text("following LOVE", 0, 0);
+  popMatrix();
+
   TwitterOn = false;
   myTime.display();
+}
+
+void drawLove(float a_) {
+  float a = a_;
+  pushMatrix();
+  translate(-50*a, -50*a);
+
+  beginShape();
+//  noStroke();
+ stroke(0, 0, 100);
+ strokeWeight(1);
+  fill(51, 15, 99, 170);
+  vertex(50*a, 35*a);
+  bezierVertex(90*a, 0, 90*a, 70*a, 50*a, 80*a);
+  bezierVertex(10*a, 70*a, 10*a, 0, 50*a, 35*a);
+  endShape();
+  popMatrix();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

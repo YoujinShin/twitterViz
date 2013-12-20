@@ -67,7 +67,7 @@ Location secondLocation = new Location(37.319828, -26.880493);
 //  Frame frame = new Frame("testing");
 //  frame.setUndecorated(true);
 //  // The name "sketch_name" must match the name of your program
-//  PApplet applet = new followLOVE_130801a();
+//  PApplet applet = new followLOVE_130809b_pan();
 //  frame.add(applet);
 //  applet.init();
 //  frame.setBounds(0, 0, 1920*2, 1080); 
@@ -75,28 +75,31 @@ Location secondLocation = new Location(37.319828, -26.880493);
 //}
 
 void setup() {
-  //  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
-  size(1400, 700, GLConstants.GLGRAPHICS);
-  smooth();
-  font = createFont("/Users/youjinshin/Documents/TwitterViz/fromHavas_130730a/data/DS-DIGIB.TTF", 32);
-  //  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
+  // for projection
+//  size(1920*2, 1080, GLConstants.GLGRAPHICS); // 800, 600 // 1920, 1080
+//  font = createFont("/Users/madscience/Desktop/DROP/DS-DIGIB.TTF", 32);
+//  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/geographyClass.mbtiles"); 
 
+  // for monitor
+  size(1400, 700, GLConstants.GLGRAPHICS);
+  font = createFont("/Users/youjinshin/Documents/TwitterViz/fromHavas_130730a/data/DS-DIGIB.TTF", 32);
+  String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/geographyClass.mbtiles");
+  
   // unfolding map
-  String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
-  //  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
   map = new UnfoldingMap(this, new MBTilesMapProvider(connStr));
-  //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new MapBox.ControlRoomProvider());
-  //  map = new UnfoldingMap(this, new Microsoft.RoadProvider());
-  //map = new UnfoldingMap(this,  new Microsoft.AerialProvider());
-  //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new OpenStreetMap.OpenStreetMapProvider());
-  //  map = new UnfoldingMap(this, -700, -400, 1400, 800, new StamenMapProvider.TonerBackground());
-  //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
-  //  map = new UnfoldingMap(this, new Microsoft.AerialProvider());
-  //  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
+//  map = new UnfoldingMap(this, new MapBox.ControlRoomProvider());
+//  map = new UnfoldingMap(this, new Microsoft.RoadProvider());
+//  map = new UnfoldingMap(this, new Microsoft.AerialProvider());
+//  map = new UnfoldingMap(this, new OpenStreetMap.OpenStreetMapProvider());
+//  map = new UnfoldingMap(this, new StamenMapProvider.TonerBackground());
   MapUtils.createDefaultEventDispatcher(this, map);
   map.setTweening(true);
+  map.setBackgroundColor(255); // int bgColor
   map.zoomAndPanTo(centerLocation, 3);
   zoomLevel = 13;
+  
+  smooth();
+  colorMode(HSB, 360, 100, 100);
 
   // twitter
   connectTwitter();
@@ -106,19 +109,23 @@ void setup() {
   myTweets = new ArrayList();
   myTime = new Time();
   pLocation = havasLocation;
-  colorMode(HSB, 360, 100, 100);
 }
 
 void draw() {
   //  noCursor();
   imageMode(CORNER);
   directionalLight(166, 166, 196, -60, -60, -60);
-  background(0);
+  background(190, 60, 100);
+  noStroke();
   map.draw();
 
   if (TwitterOn) {
     myTweets.add(new Tweet(temp_location, pLocation, username));
     StartOn = true;
+    pushMatrix();
+    translate(width*0.84,height*0.86);
+    drawLoveR(0.5);
+    popMatrix();
   }
 
   if (StartOn) {
@@ -148,8 +155,47 @@ void draw() {
     myTweets.remove(0);
   }
 
+  noStroke();
+  fill(0, 100);//, 100); //50, 13, 54
+  rect(0, height*0.81, width, height*0.1);
+
   TwitterOn = false;
   myTime.display();
+}
+
+void drawLove(float a_) {
+  float a = a_;
+  pushMatrix();
+  translate(-50*a, -50*a);
+
+  beginShape();
+  noStroke();
+//  stroke(0, 0, 100);
+//  strokeWeight(1);
+//  fill(51, 15, 99, 170);
+  noFill();
+  vertex(50*a, 35*a);
+  bezierVertex(90*a, 0, 90*a, 70*a, 50*a, 80*a);
+  bezierVertex(10*a, 70*a, 10*a, 0, 50*a, 35*a);
+  endShape();
+  popMatrix();
+}
+
+void drawLoveR(float a_) {
+  float a = a_;
+  pushMatrix();
+  translate(-50*a, -50*a);
+
+  beginShape();
+  noStroke();
+//  stroke(0, 0, 100);
+//  strokeWeight(1);
+  fill(10, 90, 90);
+  vertex(50*a, 35*a);
+  bezierVertex(90*a, 0, 90*a, 70*a, 50*a, 80*a);
+  bezierVertex(10*a, 70*a, 10*a, 0, 50*a, 35*a);
+  endShape();
+  popMatrix();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
