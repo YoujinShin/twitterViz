@@ -75,9 +75,10 @@ void setup() {
 //  String connStr = "jdbc:sqlite:" + ("/Users/madscience/Desktop/DROP/basicMap.mbtiles");
   
   /* MONITOR */
-  size(int(1920*0.73), int(540*0.73), GLConstants.GLGRAPHICS);
-  //size(1280,720, GLConstants.GLGRAPHICS);
-   font = createFont("SansSerif-48.vlw", 48);
+  //size(int(1920*0.73), int(540*0.73), GLConstants.GLGRAPHICS);
+  size(1280,720, GLConstants.GLGRAPHICS);
+  //font = createFont("SansSerif-48.vlw", 48);
+  font = loadFont("Blanch-Caps-48.vlw");
 ////  //font = createFont("/Users/youjinshin/Documents/TwitterViz/followLove_131008_pan/data/DS-DIGIB.TTF", 32);
   String connStr = "jdbc:sqlite:" + ("/Users/youjinshin/Documents/Map/basicMap.mbtiles");
 

@@ -102,7 +102,7 @@ void setup() {
 
   MapUtils.createDefaultEventDispatcher(this, map);
   map.setTweening(true);
-  map.zoomAndPanTo(centerLocation, 15);
+  map.zoomAndPanTo(centerLocation, 14);
   
   // spacebrew
   c = new Spacebrew( this );

@@ -102,7 +102,7 @@ void setup() {
 
   MapUtils.createDefaultEventDispatcher(this, map);
   map.setTweening(true);
-  map.zoomAndPanTo(centerLocation, 15);
+  map.zoomAndPanTo(centerLocation, 14);
   
   // spacebrew
   c = new Spacebrew( this );
@@ -156,18 +156,18 @@ void draw() {
       Tweet t = twitterList.get(i);
       t.update();
       t.render();
-      if(t.opac > 79) removeNum = i;
+      //if(t.opac > 79) removeNum = i;
     }
   }
   twitterOn = false;
-  if(removeNum > 0) twitterList.remove(removeNum);
-  //if(twitterList.size() > 100) twitterList.remove(0);
+  //if(removeNum > 0) twitterList.remove(removeNum);
+  if(twitterList.size() > 100) twitterList.remove(0);
   
   pan_tlon = map(gyro_gamma, 0, 1023, cen_lon-0.13, cen_lon+0.16); 
   pan_tlat = map(gyro_beta, 1023, 0, cen_lat-0.12, cen_lat+0.22);
   
-  pan_lon = lerp(pan_lon, pan_tlon, 0.006);
-  pan_lat = lerp(pan_lat, pan_tlat, 0.006);
+  pan_lon = lerp(pan_lon, pan_tlon, 0.01);
+  pan_lat = lerp(pan_lat, pan_tlat, 0.01);
   
   Location pan_tloc = new Location(pan_tlat, pan_tlon); // lat, lon
   marker = new SimplePointMarker(pan_tloc);
@@ -221,7 +221,7 @@ void checkDist() {
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void connectTwitter() {
   twitter.setOAuthConsumer(OAuthConsumerKey, OAuthConsumerSecret);
