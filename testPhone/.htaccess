@@ -1,0 +1,4 @@
+PassengerEnabled on
+RackBaseURI /sinatra
+PassengerAppRoot /home/ys1438/sinatra/testPhone
+RackEnv development
