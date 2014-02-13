@@ -75,8 +75,11 @@ PVector mpos = new PVector();
 //int t_width = 1280;
 //int t_height = 720;
 
-int t_width = 1980;
-int t_height = 1080;
+int t_width = int(1280 * 1.2);
+int t_height = int(720 * 1.2);
+
+//int t_width = 1920;
+//int t_height = 1080;
 
 UnfoldingMap map;
 SimplePointMarker marker;
